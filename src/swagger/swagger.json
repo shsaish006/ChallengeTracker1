@@ -1,0 +1,775 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Challenge API v6",
+    "version": "6.0.0",
+    "description": "API for managing challenges with Prisma ORM and PostgreSQL backend",
+    "contact": {
+      "name": "Challenge API Team",
+      "email": "api-support@example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api/v6",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/challenges": {
+      "get": {
+        "summary": "Get all challenges",
+        "description": "Retrieve a list of challenges with optional filtering and pagination",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by challenge status",
+            "schema": {
+              "type": "string",
+              "enum": ["draft", "active", "completed", "cancelled"]
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Filter by challenge type",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "track",
+            "in": "query",
+            "description": "Filter by challenge track",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "challengeSource",
+            "in": "query",
+            "description": "Filter by challenge source",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search in challenge name and description",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "Sort by field",
+            "schema": {
+              "type": "string",
+              "enum": ["created", "updated", "name", "startDate", "endDate"],
+              "default": "created"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Sort order",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Challenge"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new challenge",
+        "description": "Create a new challenge with the provided data",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChallengeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Challenge created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Challenge created successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Challenge"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/challenges/{id}": {
+      "get": {
+        "summary": "Get challenge by ID",
+        "description": "Retrieve a specific challenge by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Challenge ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenge found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Challenge"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Challenge not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update challenge",
+        "description": "Update an existing challenge with new data",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Challenge ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChallengeUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Challenge updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Challenge updated successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Challenge"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Challenge not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially update challenge",
+        "description": "Partially update an existing challenge",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Challenge ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChallengeUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Challenge updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Challenge updated successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Challenge"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Challenge not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete challenge",
+        "description": "Delete an existing challenge",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Challenge ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenge deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Challenge deleted successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Challenge not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Challenge": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cld123456789"
+          },
+          "name": {
+            "type": "string",
+            "example": "Build a Web Application"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "example": "Create a modern web application using React and Node.js"
+          },
+          "type": {
+            "type": "string",
+            "example": "Code"
+          },
+          "track": {
+            "type": "string",
+            "example": "Development"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "active", "completed", "cancelled"],
+            "example": "draft"
+          },
+          "challengeSource": {
+            "type": "string",
+            "nullable": true,
+            "example": "Work Manager",
+            "description": "Source of the challenge (Work Manager, Topgear, Github, etc.)"
+          },
+          "phases": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object"
+            }
+          },
+          "prizes": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "skills": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object"
+            }
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "registrationStartDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "registrationEndDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "submissionStartDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "submissionEndDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "example": "admin"
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true,
+            "example": "admin"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ChallengeInput": {
+        "type": "object",
+        "required": ["name", "type", "track", "createdBy"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Build a Web Application"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "example": "Create a modern web application using React and Node.js"
+          },
+          "type": {
+            "type": "string",
+            "example": "Code"
+          },
+          "track": {
+            "type": "string",
+            "example": "Development"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "active", "completed", "cancelled"],
+            "default": "draft"
+          },
+          "challengeSource": {
+            "type": "string",
+            "nullable": true,
+            "example": "Work Manager",
+            "description": "Source of the challenge (Work Manager, Topgear, Github, etc.)"
+          },
+          "phases": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object"
+            }
+          },
+          "prizes": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "skills": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object"
+            }
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "registrationStartDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "registrationEndDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "submissionStartDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "submissionEndDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "example": "admin"
+          }
+        }
+      },
+      "ChallengeUpdateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Build a Web Application"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "example": "Create a modern web application using React and Node.js"
+          },
+          "type": {
+            "type": "string",
+            "example": "Code"
+          },
+          "track": {
+            "type": "string",
+            "example": "Development"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "active", "completed", "cancelled"]
+          },
+          "challengeSource": {
+            "type": "string",
+            "nullable": true,
+            "example": "Work Manager",
+            "description": "Source of the challenge (Work Manager, Topgear, Github, etc.)"
+          },
+          "phases": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object"
+            }
+          },
+          "prizes": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "skills": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object"
+            }
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "registrationStartDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "registrationEndDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "submissionStartDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "submissionEndDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "example": "admin"
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "example": 1
+          },
+          "limit": {
+            "type": "integer",
+            "example": 20
+          },
+          "total": {
+            "type": "integer",
+            "example": 150
+          },
+          "totalPages": {
+            "type": "integer",
+            "example": 8
+          },
+          "hasNextPage": {
+            "type": "boolean",
+            "example": true
+          },
+          "hasPreviousPage": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "example": "Validation Error"
+          },
+          "message": {
+            "type": "string",
+            "example": "The request contains invalid data"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

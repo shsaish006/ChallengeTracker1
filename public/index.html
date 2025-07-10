@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge API v6</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .hero-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem 0;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .api-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .api-card:hover {
+            transform: translateY(-5px);
+        }
+        .endpoint-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        .method-get { background-color: #28a745; color: white; }
+        .method-post { background-color: #007bff; color: white; }
+        .method-put { background-color: #ffc107; color: black; }
+        .method-patch { background-color: #17a2b8; color: white; }
+        .method-delete { background-color: #dc3545; color: white; }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="hero-section text-center text-white">
+                    <h1 class="display-4 mb-4">
+                        <i class="fas fa-trophy me-3"></i>
+                        Challenge API v6
+                    </h1>
+                    <p class="lead mb-4">
+                        Modern Challenge Management API with Prisma ORM and PostgreSQL
+                    </p>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <h5>PostgreSQL + Prisma</h5>
+                            <p>Type-safe database operations with modern ORM</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <h5>RESTful API</h5>
+                            <p>Complete CRUD operations for challenge management</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-code-branch"></i>
+                            </div>
+                            <h5>Challenge Source Tracking</h5>
+                            <p>Track origins from Work Manager, Topgear, Github, etc.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-card">
+                    <h3 class="text-gradient mb-4">
+                        <i class="fas fa-list me-2"></i>
+                        Available Endpoints
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h5>
+                                    <span class="endpoint-badge method-get">GET</span>
+                                    /api/v6/challenges
+                                </h5>
+                                <p class="text-muted">Get all challenges with filtering and pagination</p>
+                                <small class="text-primary">
+                                    <i class="fas fa-filter me-1"></i>
+                                    Supports filtering by challengeSource, status, type, track
+                                </small>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5>
+                                    <span class="endpoint-badge method-post">POST</span>
+                                    /api/v6/challenges
+                                </h5>
+                                <p class="text-muted">Create a new challenge</p>
+                                <small class="text-success">
+                                    <i class="fas fa-plus me-1"></i>
+                                    Includes challengeSource field for origin tracking
+                                </small>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5>
+                                    <span class="endpoint-badge method-get">GET</span>
+                                    /api/v6/challenges/{id}
+                                </h5>
+                                <p class="text-muted">Get challenge by ID</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h5>
+                                    <span class="endpoint-badge method-put">PUT</span>
+                                    /api/v6/challenges/{id}
+                                </h5>
+                                <p class="text-muted">Update challenge (full update)</p>
+                                <small class="text-warning">
+                                    <i class="fas fa-edit me-1"></i>
+                                    challengeSource field can be updated
+                                </small>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5>
+                                    <span class="endpoint-badge method-patch">PATCH</span>
+                                    /api/v6/challenges/{id}
+                                </h5>
+                                <p class="text-muted">Partially update challenge</p>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5>
+                                    <span class="endpoint-badge method-delete">DELETE</span>
+                                    /api/v6/challenges/{id}
+                                </h5>
+                                <p class="text-muted">Delete challenge</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-card">
+                    <h3 class="text-gradient mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Challenge Source Feature
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p class="lead">
+                                The new <code>challengeSource</code> field allows tracking the origin of challenges.
+                            </p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Optional string field</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Can be null or any text value</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Supports filtering in search queries</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Included in create/update operations</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-light p-3 rounded">
+                                <h6>Example Values:</h6>
+                                <ul class="list-unstyled text-muted">
+                                    <li>• Work Manager</li>
+                                    <li>• Topgear</li>
+                                    <li>• Github</li>
+                                    <li>• Manual Entry</li>
+                                    <li>• API Integration</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="api-card">
+                            <h4 class="text-gradient mb-3">
+                                <i class="fas fa-book me-2"></i>
+                                API Documentation
+                            </h4>
+                            <p>Explore the complete API documentation with interactive examples.</p>
+                            <a href="/api-docs" class="btn btn-primary">
+                                <i class="fas fa-external-link-alt me-2"></i>
+                                View Swagger Docs
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="api-card">
+                            <h4 class="text-gradient mb-3">
+                                <i class="fas fa-heart-pulse me-2"></i>
+                                Health Check
+                            </h4>
+                            <p>Check the API health status and service information.</p>
+                            <a href="/health" class="btn btn-success">
+                                <i class="fas fa-stethoscope me-2"></i>
+                                Health Check
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-card text-center">
+                    <h4 class="text-gradient mb-3">
+                        <i class="fas fa-code me-2"></i>
+                        Example Request
+                    </h4>
+                    <div class="bg-dark text-light p-3 rounded text-start">
+                        <pre><code>POST /api/v6/challenges
+Content-Type: application/json
+
+{
+  "name": "Build a Mobile App",
+  "description": "Create a React Native mobile application",
+  "type": "Code",
+  "track": "Development",
+  "challengeSource": "Work Manager",
+  "createdBy": "admin",
+  "status": "draft",
+  "startDate": "2024-07-15T00:00:00Z",
+  "endDate": "2024-07-30T23:59:59Z"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

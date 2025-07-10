@@ -1,0 +1,29 @@
+modules = ["nodejs-20"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Challenge API Server"
+
+[[workflows.workflow]]
+name = "Challenge API Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install && npx prisma generate && npx prisma migrate dev --name init && node src/server.js"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80

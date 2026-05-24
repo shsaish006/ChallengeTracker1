@@ -1,9 +1,10 @@
-const { body, validationResult } = require('express-validator');
+import { body, validationResult } from 'express-validator';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 /**
  * Validation middleware for challenge creation
  */
-const validateChallenge = [
+export const validateChallenge: RequestHandler[] = [
   body('name')
     .notEmpty()
     .withMessage('Challenge name is required')
@@ -100,7 +101,7 @@ const validateChallenge = [
     .isArray()
     .withMessage('Groups must be an array'),
   
-  (req, res, next) => {
+  (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -117,7 +118,7 @@ const validateChallenge = [
 /**
  * Validation middleware for challenge update
  */
-const validateChallengeUpdate = [
+export const validateChallengeUpdate: RequestHandler[] = [
   body('name')
     .optional()
     .isLength({ min: 1, max: 255 })
@@ -210,7 +211,7 @@ const validateChallengeUpdate = [
     .isArray()
     .withMessage('Groups must be an array'),
   
-  (req, res, next) => {
+  (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -223,8 +224,3 @@ const validateChallengeUpdate = [
     next();
   }
 ];
-
-module.exports = {
-  validateChallenge,
-  validateChallengeUpdate
-};

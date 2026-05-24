@@ -1,12 +1,27 @@
+import { Request, Response, NextFunction } from 'express';
+
+interface CustomError extends Error {
+  code?: string;
+  meta?: any;
+  statusCode?: number;
+  status?: number;
+  details?: any;
+}
+
 /**
  * Global error handler middleware
  */
-function errorHandler(err, req, res, next) {
+export default function errorHandler(
+  err: CustomError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
   console.error('Error occurred:', err);
 
   // Default error response
   let statusCode = 500;
-  let errorResponse = {
+  let errorResponse: any = {
     success: false,
     error: 'Internal Server Error',
     message: 'An unexpected error occurred'
@@ -107,5 +122,3 @@ function errorHandler(err, req, res, next) {
 
   res.status(statusCode).json(errorResponse);
 }
-
-module.exports = errorHandler;

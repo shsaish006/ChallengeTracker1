@@ -1,8 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 
-/**
- * Prisma client instance with connection configuration
- */
 const prisma = new PrismaClient({
   datasources: {
     db: {
@@ -17,4 +14,4 @@ process.on('beforeExit', async () => {
   await prisma.$disconnect();
 });
 
-module.exports = prisma;
+export default prisma;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, User, GitBranch, Eye, Edit2, Trash2 } from 'lucide-react';
+import { Calendar, User, GitBranch, Eye, Edit2, Trash2, Award } from 'lucide-react';
 
 export interface Challenge {
   id: string;
@@ -15,6 +15,10 @@ export interface Challenge {
   endDate?: string | null;
   created: string;
   updated: string;
+  prizes?: { place: number; value: number; currency: string }[] | null;
+  phases?: { name: string; duration: number; status: string }[] | null;
+  tags?: string[] | null;
+  skills?: { name: string; level: string }[] | null;
 }
 
 interface ChallengeCardProps {
@@ -53,6 +57,11 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
       year: 'numeric'
     });
   };
+
+  // Calculate total prize pool
+  const totalPrize = challenge.prizes 
+    ? challenge.prizes.reduce((sum, p) => sum + p.value, 0)
+    : 0;
 
   return (
     <div className={`glass-panel fade-in-up challenge-card-container ${challenge.status.toLowerCase()}`}>
@@ -110,10 +119,26 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
           border-radius: 4px;
           text-transform: uppercase;
         }
+        
+        .card-pill-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-bottom: 16px;
+        }
+        .card-pill {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid var(--glass-border);
+          color: var(--text-secondary);
+          font-size: 0.7rem;
+          font-weight: 600;
+          padding: 2px 8px;
+          border-radius: 4px;
+        }
       `}</style>
 
       <div>
-        <div className="d-flex justify-content-between align-items-start mb-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="d-flex justify-content-between align-items-start mb-3" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <span className={`status-badge ${getStatusClass(challenge.status)}`}>
             {challenge.status}
           </span>
@@ -132,9 +157,21 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
           {challenge.name}
         </h3>
 
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', height: '60px' }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '16px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', height: '40px' }}>
           {challenge.description || 'No description provided.'}
         </p>
+
+        {/* Dynamic Tags Rendering */}
+        {challenge.tags && challenge.tags.length > 0 && (
+          <div className="card-pill-list">
+            {challenge.tags.slice(0, 3).map((t, idx) => (
+              <span key={idx} className="card-pill">{t}</span>
+            ))}
+            {challenge.tags.length > 3 && (
+              <span className="card-pill" style={{ color: 'var(--accent-blue)' }}>+{challenge.tags.length - 3} more</span>
+            )}
+          </div>
+        )}
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px', borderBottom: '1px solid var(--glass-border)', paddingBottom: '16px' }}>
           <div>
@@ -148,6 +185,12 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
+          {totalPrize > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--accent-yellow)', fontWeight: 700 }}>
+              <Award size={14} />
+              <span>Prize Pool: ${totalPrize.toLocaleString()} USD</span>
+            </div>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
             <Calendar size={14} style={{ color: 'var(--accent-blue)' }} />
             <span>Start: {formatDate(challenge.startDate)}</span>

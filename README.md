@@ -4,33 +4,36 @@ An advanced, enterprise-ready full-stack Challenge Management Application and AP
 
 ## Technical Architecture
 
-The application is structured as a unified monorepo containing:
-1. **TypeScript Backend**: Express-based REST API serving type-safe operations. It supports dual database access methodologies through both Prisma ORM and Drizzle ORM to demonstrates flexible schema management and query engines.
-2. **Advanced Reactive Frontend**: A high-performance Single Page Application (SPA) built using React, Vite, TypeScript, Chart.js, and styled with premium glassmorphic Vanilla CSS. The frontend is compiled and served directly from the backend server to minimize network routing.
+The application is structured as a robust, polyglot microservice monorepo containing:
+1. **Primary REST Service (TypeScript Backend)**: An Express-based REST API built using TypeScript. It coordinates the core challenge business logic and performs CRUD operations on a PostgreSQL database using both Prisma ORM (for schema migrations and type safety) and Drizzle ORM (for direct high-speed SQL execution).
+2. **High-Performance Auditing Microservice (Go Backend)**: A standalone service written in Golang. It connects directly to MongoDB (NoSQL) using the official Go Mongo Driver. It serves high-speed HTTP auditing endpoints, logging all Postgres challenge transaction trails (CREATES, UPDATES, DELETES) asynchronously.
+3. **Dual-Database Storage (SQL & NoSQL)**:
+   * **PostgreSQL** serves as the transactional database for structured challenge nodes.
+   * **MongoDB** serves as the document log database for JSON-based activity auditing trails.
+4. **Advanced Reactive Frontend**: A highly interactive Single Page Application (SPA) built using React, Vite, TypeScript, Chart.js, and custom Glassmorphic Vanilla CSS. The dashboard links concurrently to the Express API (for Postgres operations) and serves a live transaction timeline synced from the MongoDB NoSQL audit stream.
 
 ```
-+----------------------------------------------------------------------+
-|                     Advanced React SPA Dashboard                     |
-|            (Vite, React, TypeScript, Chart.js, Glassmorphism)        |
-+----------------------------------+-----------------------------------+
-                                   |
-                                   | HTTP REST Commands
-                                   v
-+----------------------------------+-----------------------------------+
-|                     Node.js / Express Server                         |
-|                         (TypeScript Engine)                          |
-+------------------+-------------------------------+-------------------+
+       +-------------------------------------------------------+
+       |             Advanced React SPA Dashboard              |
+       |           (React, HTML5, CSS3, JS/TS, Charts)         |
+       +-----------+-------------------------------+-----------+
                    |                               |
-                   | Prisma ORM                    | Drizzle ORM
-                   v (Type-safe CRUD Queries)      v (Direct SQL Engine)
-+------------------+-------------------------------+-------------------+
-|                              Prisma Client   | Drizzle DB Client |
-+------------------+-------------------------------+-------------------+
-                   |                               |
+                   | Primary CRUD Queries          | NoSQL Auditing Streams
                    v                               v
-+------------------+-------------------------------+-------------------+
-|                         PostgreSQL Database                          |
-+----------------------------------------------------------------------+
+       +-----------+-----------+       +-----------+-----------+
+       |   Node.js / Express   |       |  Golang Microservice  |
+       |  (TypeScript Server)  |       |   (Go API Server)     |
+       +-----------+-----------+       +-----------+-----------+
+                   |                               |
+       +-----------+-----------+                   | Go Mongo Driver
+       | Prisma & Drizzle ORMs |                   v
+       +-----------+-----------+       +-----------+-----------+
+                   |                   |   MongoDB Database    |
+                   v                   |    (NoSQL Engine)     |
+       +-----------+-----------+       +-----------------------+
+       |  PostgreSQL Database  |
+       |     (SQL Engine)      |
+       +-----------------------+
 ```
 
 ## Features

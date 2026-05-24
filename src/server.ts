@@ -7,6 +7,7 @@ import fs from 'fs';
 
 import challengeRoutes from './routes/challenges.js';
 import errorHandler from './middleware/errorHandler.js';
+import { connectToMongoDB } from './utils/mongodbClient.js';
 
 // ES Module pathname support
 const __filename = fileURLToPath(import.meta.url);
@@ -41,6 +42,7 @@ app.get('/health', (req: Request, res: Response) => {
     timestamp: new Date().toISOString(),
     service: 'challenge-api-v6',
     orms: ['prisma', 'drizzle'],
+    databases: ['postgresql', 'mongodb'],
     language: 'typescript'
   });
 });
@@ -64,7 +66,8 @@ app.use('*', (req: Request, res: Response) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await connectToMongoDB();
   console.log(`Challenge API v6 server running on port ${PORT}`);
   console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
   console.log(`Health check available at http://localhost:${PORT}/health`);

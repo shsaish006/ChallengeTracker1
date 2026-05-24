@@ -5,7 +5,12 @@ import { validateChallenge, validateChallengeUpdate } from '../middleware/valida
 const router = Router();
 
 // =========================================================================
-// SUPPORTING ENDPOINTS (Must come before /:id routes)
+// AUDIT LOGS ENDPOINT (Must come before :id routes)
+// =========================================================================
+router.get('/audit', challengeController.getAuditLogs);
+
+// =========================================================================
+// SUPPORTING ENDPOINTS
 // =========================================================================
 router.get('/types', challengeController.getChallengeTypes);
 router.get('/tracks', challengeController.getChallengeTracks);

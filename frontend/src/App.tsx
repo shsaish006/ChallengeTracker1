@@ -11,7 +11,8 @@ import {
   RefreshCw, 
   Search,
   Filter,
-  SlidersHorizontal
+  SlidersHorizontal,
+  ShieldCheck
 } from 'lucide-react';
 
 import type { Challenge } from './components/ChallengeCard.js';
@@ -19,6 +20,7 @@ import { ChallengeCard } from './components/ChallengeCard.js';
 import { ChallengeModal } from './components/ChallengeModal.js';
 import { AnalyticsView } from './components/AnalyticsView.js';
 import { SourcesView } from './components/SourcesView.js';
+import { AuditLogsView } from './components/AuditLogsView.js';
 
 interface Toast {
   id: string;
@@ -28,7 +30,7 @@ interface Toast {
 
 export const App: React.FC = () => {
   // Navigation State
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'challenges' | 'create' | 'drizzle' | 'sources'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'challenges' | 'create' | 'drizzle' | 'sources' | 'audit'>('dashboard');
 
   // Core Data States
   const [challengesList, setChallengesList] = useState<Challenge[]>([]);
@@ -336,6 +338,11 @@ export const App: React.FC = () => {
             <Network size={18} />
             Challenge Sources
           </div>
+
+          <div className={`nav-item ${activeTab === 'audit' ? 'active' : ''}`} onClick={() => setActiveTab('audit')}>
+            <ShieldCheck size={18} />
+            Audit Logs (NoSQL)
+          </div>
         </nav>
 
         <div className="glass-panel" style={{ padding: '16px', background: 'rgba(255, 255, 255, 0.01)', border: '1px solid rgba(255,255,255,0.03)' }}>
@@ -358,12 +365,14 @@ export const App: React.FC = () => {
               {activeTab === 'challenges' && 'Challenges Management'}
               {activeTab === 'drizzle' && 'Drizzle ORM Sandbox'}
               {activeTab === 'sources' && 'Challenge Source Analytics'}
+              {activeTab === 'audit' && 'System Audit trails'}
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginTop: '4px' }}>
               {activeTab === 'dashboard' && 'Real-time database analytics and statistics tracker.'}
               {activeTab === 'challenges' && 'Advanced multi-criteria filtering and full CRUD actions.'}
               {activeTab === 'drizzle' && 'Perform native fast SQL operations using Drizzle ORM.'}
               {activeTab === 'sources' && 'Origin analysis of challenges across platforms.'}
+              {activeTab === 'audit' && 'MongoDB NoSQL transaction audits and system history logs.'}
             </p>
           </div>
 
@@ -670,6 +679,11 @@ export const App: React.FC = () => {
                   setActiveTab('challenges');
                 }} 
               />
+            )}
+
+            {/* TAB VIEW 6: AUDIT TRAILS */}
+            {activeTab === 'audit' && (
+              <AuditLogsView />
             )}
           </>
         )}

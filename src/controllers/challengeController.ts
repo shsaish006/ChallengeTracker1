@@ -3,7 +3,8 @@ import { eq, or, ilike, and } from 'drizzle-orm';
 import crypto from 'crypto';
 import prisma from '../utils/prismaClient.js';
 import db from '../utils/drizzleClient.js';
-import { challenges, challengeTypes, challengeTracks } from '../drizzle/schema.js';
+import { challenges } from '../drizzle/schema.js';
+import { logAudit, getAudits } from '../utils/auditLogger.js';
 
 // =========================================================================
 // PRISMA ORM CONTROLLERS (Primary API)
@@ -24,6 +25,14 @@ export async function createChallenge(req: Request, res: Response, next: NextFun
     const challenge = await prisma.challenge.create({
       data: challengeData
     });
+
+    // Emits Audit trail to MongoDB NoSQL
+    await logAudit(
+      challenge.id,
+      'CREATE',
+      `Created challenge '${challenge.name}' using Prisma ORM.`,
+      challenge.createdBy
+    );
 
     res.status(201).json({
       success: true,
@@ -173,6 +182,14 @@ export async function updateChallenge(req: Request, res: Response, next: NextFun
       data: updateData
     });
 
+    // Emits Audit trail to MongoDB NoSQL
+    await logAudit(
+      challenge.id,
+      'UPDATE',
+      `Updated challenge '${challenge.name}' (Full) using Prisma ORM.`,
+      challenge.updatedBy || 'system'
+    );
+
     res.json({
       success: true,
       message: 'Challenge updated successfully (Prisma)',
@@ -214,6 +231,14 @@ export async function patchChallenge(req: Request, res: Response, next: NextFunc
       data: updateData
     });
 
+    // Emits Audit trail to MongoDB NoSQL
+    await logAudit(
+      challenge.id,
+      'UPDATE',
+      `Patched challenge '${challenge.name}' (Partial) using Prisma ORM.`,
+      challenge.updatedBy || 'system'
+    );
+
     res.json({
       success: true,
       message: 'Challenge updated successfully (Prisma)',
@@ -249,6 +274,14 @@ export async function deleteChallenge(req: Request, res: Response, next: NextFun
       where: { id }
     });
 
+    // Emits Audit trail to MongoDB NoSQL
+    await logAudit(
+      id,
+      'DELETE',
+      `Deleted challenge with ID ${id} using Prisma ORM.`,
+      'admin'
+    );
+
     res.json({
       success: true,
       message: 'Challenge deleted successfully (Prisma)',
@@ -283,6 +316,14 @@ export async function drizzleCreateChallenge(req: Request, res: Response, next: 
     };
 
     const result = await db.insert(challenges).values(challengeData).returning();
+
+    // Emits Audit trail to MongoDB NoSQL
+    await logAudit(
+      result[0].id,
+      'CREATE',
+      `Created challenge '${result[0].name}' using Drizzle ORM.`,
+      result[0].createdBy
+    );
 
     res.status(201).json({
       success: true,
@@ -396,6 +437,14 @@ export async function drizzleUpdateChallenge(req: Request, res: Response, next: 
       return;
     }
 
+    // Emits Audit trail to MongoDB NoSQL
+    await logAudit(
+      result[0].id,
+      'UPDATE',
+      `Updated challenge '${result[0].name}' using Drizzle ORM.`,
+      result[0].updatedBy || 'drizzle_system'
+    );
+
     res.json({
       success: true,
       message: 'Challenge updated successfully (Drizzle)',
@@ -424,6 +473,14 @@ export async function drizzleDeleteChallenge(req: Request, res: Response, next: 
       return;
     }
 
+    // Emits Audit trail to MongoDB NoSQL
+    await logAudit(
+      id,
+      'DELETE',
+      `Deleted challenge with ID ${id} using Drizzle ORM.`,
+      'drizzle_admin'
+    );
+
     res.json({
       success: true,
       message: 'Challenge deleted successfully (Drizzle)',
@@ -436,11 +493,31 @@ export async function drizzleDeleteChallenge(req: Request, res: Response, next: 
 }
 
 // =========================================================================
+// AUDIT LOGS ENDPOINT (MongoDB NoSQL)
+// =========================================================================
+
+/**
+ * Retrieve MongoDB/Sandbox activity audit trails
+ */
+export async function getAuditLogs(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const audits = await getAudits();
+    res.json({
+      success: true,
+      message: 'Retrieved NoSQL audit trail from MongoDB',
+      data: audits
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// =========================================================================
 // SUPPORTING ENDPOINTS
 // =========================================================================
 
 /**
- * Get challenge types (Prisma backend with Drizzle compatibility fallback)
+ * Get challenge types
  */
 export async function getChallengeTypes(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -460,7 +537,7 @@ export async function getChallengeTypes(req: Request, res: Response, next: NextF
 }
 
 /**
- * Get challenge tracks (Prisma backend with Drizzle compatibility fallback)
+ * Get challenge tracks
  */
 export async function getChallengeTracks(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
